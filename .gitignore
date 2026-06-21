@@ -1,0 +1,21 @@
+# macOS
+.DS_Store
+
+# Xcode
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.xccheckout
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Swift Package Manager
+.swiftpm/
+.build/
+
+# Resolved package versions are committed intentionally so builds are reproducible.
+# (Do not ignore OpenLid.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved)
