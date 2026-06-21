@@ -9,7 +9,7 @@ they are done.
 It's an open, transparent alternative inspired by [holdmylid.app](https://holdmylid.app),
 built for the community. No network calls, no telemetry, fully local.
 
-> **Status:** v0.1 (MVP). Core wake/sleep logic, agent monitoring (process + hooks),
+> **Status:** v0.2 (MVP). Core wake/sleep logic, agent monitoring (process + hooks),
 > battery guardrails, display control, notifications, menu bar UI and a global
 > shortcut are implemented.
 
