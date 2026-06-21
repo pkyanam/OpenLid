@@ -59,12 +59,24 @@ can add your own agents (process detection) in **Settings → Agents**.
 - **Global shortcut** — ⌥⌘L toggles the whole system on/off.
 - **Notifications + chimes** — when engaging, when agents finish, and when the battery limit is hit.
 
+## Install
+
+Download the latest signed, notarized build from the
+[**Releases**](https://github.com/pkyanam/OpenLid/releases) page:
+
+- **DMG** — open `OpenLid-x.y.z.dmg` and drag **OpenLid** to Applications.
+- **Zip** — unzip `OpenLid-x.y.z.zip` and move `OpenLid.app` to Applications.
+
+Builds are signed with a Developer ID and notarized by Apple, so they launch with a
+normal double-click. OpenLid lives in the menu bar (no Dock icon). Requires macOS 14+.
+
 ## Build & run
 
-Requires macOS 14+ and Xcode 16+ (developed against Xcode 26).
+Requires macOS 14+ and Xcode 16+ (developed against Xcode 26). See
+[RELEASING.md](RELEASING.md) for producing signed release builds.
 
 ```sh
-git clone https://github.com/your-org/OpenLid.git
+git clone https://github.com/pkyanam/OpenLid.git
 cd OpenLid
 open OpenLid.xcodeproj   # then Run (⌘R)
 ```
