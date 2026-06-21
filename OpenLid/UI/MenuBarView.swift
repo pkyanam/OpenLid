@@ -4,6 +4,7 @@ import SwiftUI
 /// header + toggle, battery, agents, pause, footer.
 struct MenuBarView: View {
     @Bindable var app: AppState
+    @Environment(\.openSettings) private var openSettings
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -125,17 +126,10 @@ struct MenuBarView: View {
 
     private var footer: some View {
         VStack(alignment: .leading, spacing: 2) {
-            SettingsLink {
-                HStack {
-                    Text("Settings…")
-                    Spacer()
-                    Text("⌘,").foregroundStyle(.secondary)
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 5)
-                .contentShape(Rectangle())
+            MenuActionRow(title: "Settings…", shortcut: "⌘,") {
+                openSettingsWindow()
             }
-            .buttonStyle(.plain)
+            .keyboardShortcut(",", modifiers: .command)
 
             MenuActionRow(title: "Quit OpenLid", shortcut: "⌘Q") {
                 NSApp.terminate(nil)
@@ -143,6 +137,19 @@ struct MenuBarView: View {
             .keyboardShortcut("q", modifiers: .command)
         }
         .padding(.horizontal, 4)
+    }
+
+    /// Opens the Settings window and brings it to the front. As a menu-bar-only
+    /// (accessory) app, OpenLid must explicitly activate itself, otherwise the
+    /// window opens hidden behind other apps.
+    private func openSettingsWindow() {
+        NSApp.activate(ignoringOtherApps: true)
+        openSettings()
+        DispatchQueue.main.async {
+            NSApp.windows
+                .first { $0.title == "OpenLid Settings" || $0.identifier?.rawValue.contains("Settings") == true }?
+                .makeKeyAndOrderFront(nil)
+        }
     }
 
     private var divider: some View {
