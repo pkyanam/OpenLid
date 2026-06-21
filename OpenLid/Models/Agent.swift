@@ -1,17 +1,24 @@
 import Foundation
 
-/// How OpenLid detects whether a given agent is working.
-enum AgentDetection: Codable, Equatable, Hashable {
-    /// Watch for a running process / application by name. Coarse: "alive == maybe working".
-    case process(names: [String])
-    /// Watch `~/.openlid/agents/` for status files written by the agent's lifecycle hooks.
-    /// High accuracy: real Working/Idle per session.
-    case hook(agentID: String)
+/// How OpenLid detects whether an agent is working.
+///
+/// An agent may use a lifecycle **hook** (accurate, per-session), a **process** name
+/// fallback (coarse: "the process is alive"), or both. When both are configured the
+/// hook signal wins; the process name is only a fallback so agents still light up
+/// even before their hooks are installed.
+struct AgentDetection: Codable, Equatable, Hashable {
+    /// Hook id watched in `~/.openlid/agents/` (file-based signaling). High accuracy.
+    var hookID: String?
+    /// Exact process / application names to match (case-insensitive). Coarse fallback.
+    var processNames: [String]
 
-    var isHook: Bool {
-        if case .hook = self { return true }
-        return false
+    init(hookID: String? = nil, processNames: [String] = []) {
+        self.hookID = hookID
+        self.processNames = processNames
     }
+
+    var usesHook: Bool { hookID != nil }
+    var usesProcess: Bool { !processNames.isEmpty }
 }
 
 /// A configured agent OpenLid watches. Persisted to config.json.
@@ -19,15 +26,15 @@ struct Agent: Identifiable, Codable, Equatable, Hashable {
     var id: String
     var name: String
     var detection: AgentDetection
-    /// SF Symbol used as the row icon (we can't bundle third-party logos).
-    var symbol: String
+    /// Asset-catalog image name for the agent's brand icon.
+    var iconName: String
     var enabled: Bool
 
-    init(id: String, name: String, detection: AgentDetection, symbol: String, enabled: Bool = true) {
+    init(id: String, name: String, detection: AgentDetection, iconName: String, enabled: Bool = true) {
         self.id = id
         self.name = name
         self.detection = detection
-        self.symbol = symbol
+        self.iconName = iconName
         self.enabled = enabled
     }
 }
@@ -36,17 +43,19 @@ struct Agent: Identifiable, Codable, Equatable, Hashable {
 struct AgentStatus: Identifiable, Equatable {
     let id: String
     let name: String
-    let symbol: String
+    let iconName: String
     var isWorking: Bool
-    /// Number of active sessions (hook agents). For process agents this is the
-    /// number of matching processes found.
+    /// Hook sessions when detected via hook; matching process count otherwise.
     var sessionCount: Int
+    /// True when the working signal came from a hook (accurate), false for process.
+    var detectedViaHook: Bool
 
     var statusLabel: String {
-        if isWorking {
+        guard isWorking else { return "idle" }
+        if detectedViaHook {
             if sessionCount > 1 { return "\(sessionCount) sessions" }
             return sessionCount == 1 ? "1 session" : "working"
         }
-        return "idle"
+        return "running"
     }
 }

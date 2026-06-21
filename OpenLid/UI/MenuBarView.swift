@@ -87,9 +87,8 @@ struct MenuBarView: View {
 
     private func agentRow(_ agent: AgentStatus) -> some View {
         HStack(spacing: 8) {
-            Image(systemName: agent.symbol)
+            AgentIconView(iconName: agent.iconName, isWorking: agent.isWorking)
                 .frame(width: 18)
-                .foregroundStyle(agent.isWorking ? .primary : .secondary)
             Text(agent.name)
                 .foregroundStyle(agent.isWorking ? .primary : .secondary)
             Spacer()

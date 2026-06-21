@@ -1,5 +1,23 @@
 import SwiftUI
 
+/// Renders an agent's brand icon from the asset catalog, dimmed when the agent is idle.
+/// Icons authored as template images tint to the label color; colored brand logos keep
+/// their color and simply fade when idle.
+struct AgentIconView: View {
+    let iconName: String
+    let isWorking: Bool
+    var size: CGFloat = 16
+
+    var body: some View {
+        Image(iconName)
+            .resizable()
+            .scaledToFit()
+            .frame(width: size, height: size)
+            .foregroundStyle(isWorking ? Color.primary : Color.secondary)
+            .opacity(isWorking ? 1.0 : 0.5)
+    }
+}
+
 /// Small rounded "pill" button used for the Pause quick actions (30 min / 1 hour).
 struct PillButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {

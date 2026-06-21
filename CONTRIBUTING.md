@@ -18,13 +18,16 @@ default agent list in `OpenLid/Models/AppConfig.swift`:
 Agent(
     id: "cursor",
     name: "Cursor",
-    detection: .process(names: ["Cursor"]),
-    symbol: "cursorarrow.rays"
+    detection: AgentDetection(processNames: ["Cursor"]),
+    iconName: "agent.cursor"
 )
 ```
 
-`names` are matched (case-insensitively) against running application names and
-the output of `ps -axco command`. Add every plausible binary/app name.
+`processNames` are matched **exactly** (case-insensitively) against running
+application names/bundle ids and the base command name of each process (from
+`ps -axo comm=`). Use the exact name — exact matching is what keeps `cursor` from
+matching `CursorUIViewService`. `iconName` is an asset-catalog image (see
+`scripts/generate_icons.py` for how the brand icons are produced).
 
 ### 2. Lifecycle hooks (preferred — real Working/Idle signal)
 
@@ -40,7 +43,10 @@ so a crashed agent never holds the lock forever.
 
 To ship hook support:
 
-1. Add the agent to the default list with `detection: .hook(agentID: "<agent-id>")`.
+1. Add the agent to the default list with
+   `detection: AgentDetection(hookID: "<agent-id>", processNames: ["<cli-name>"])`.
+   The hook signal wins; the process name is just a fallback so the agent still
+   shows up before the hook is installed.
 2. Add install-ready scripts under `examples/hooks/<agent-id>/` plus a short README
    explaining where to register them in that agent's config.
 

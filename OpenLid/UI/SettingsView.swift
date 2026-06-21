@@ -94,10 +94,10 @@ private struct AgentsSettings: View {
             Section("Watched agents") {
                 ForEach($app.config.agents) { $agent in
                     HStack {
-                        Image(systemName: agent.symbol).frame(width: 18)
+                        AgentIconView(iconName: agent.iconName, isWorking: true).frame(width: 18)
                         VStack(alignment: .leading) {
                             Text(agent.name)
-                            Text(agent.detection.isHook ? "Lifecycle hook" : "Process detection")
+                            Text(detectionLabel(agent.detection))
                                 .font(.caption).foregroundStyle(.secondary)
                         }
                         Spacer()
@@ -116,15 +116,25 @@ private struct AgentsSettings: View {
         .formStyle(.grouped)
     }
 
+    private func detectionLabel(_ detection: AgentDetection) -> String {
+        switch (detection.usesHook, detection.usesProcess) {
+        case (true, true): return "Lifecycle hook (process fallback)"
+        case (true, false): return "Lifecycle hook"
+        case (false, true): return "Process detection"
+        case (false, false): return "Not configured"
+        }
+    }
+
     private func addAgent() {
         let names = newProcesses.split(separator: ",")
             .map { $0.trimmingCharacters(in: .whitespaces) }
             .filter { !$0.isEmpty }
+        let trimmedName = newName.trimmingCharacters(in: .whitespaces)
         let id = "custom-" + UUID().uuidString.prefix(8)
         app.config.agents.append(
-            Agent(id: id, name: newName.trimmingCharacters(in: .whitespaces),
-                  detection: .process(names: names.isEmpty ? [newName] : names),
-                  symbol: "app.dashed")
+            Agent(id: String(id), name: trimmedName,
+                  detection: AgentDetection(processNames: names.isEmpty ? [trimmedName] : names),
+                  iconName: "agent.custom")
         )
         newName = ""
         newProcesses = ""

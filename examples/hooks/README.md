@@ -29,6 +29,11 @@ the agent starts and `idle` when it stops.
 | OpenAI Codex CLI | [`codex/`](codex/) | Wire into Codex's notify/event mechanism |
 | OpenCode | [`opencode/`](opencode/) | Wire into OpenCode's hook/event mechanism |
 | Gemini | [`gemini/`](gemini/) | Wire into the Gemini CLI's event mechanism |
+| Devin | [`devin/`](devin/) | Wire into the Devin CLI's event mechanism |
+
+Most of these agents also have **process detection** as a built-in fallback, so they
+appear as "running" even before you install their hooks. Installing a hook upgrades
+that to accurate per-session "working / idle".
 
 > Exact hook/event names differ between tools and versions. The Claude Code example is
 > complete; the others ship the same script plus guidance, since their hook surfaces
