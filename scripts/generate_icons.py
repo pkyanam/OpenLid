@@ -73,19 +73,29 @@ def main():
         ("agent.claude",   "ClaudeAI",   "0 0 256 257",       "#d97757",  False),
         ("agent.openai",   "OpenAI",     "0 0 256 260",       "#000000",  True),
         ("agent.cursor",   "CursorIcon", "0 0 466.73 532.09", "#000000",  True),
-        ("agent.gemini",   "Gemini",     "0 0 296 298",       "#3689FF",  False),
     ]
     for name, component, vb, fill, template in glyphs:
         d = first_path_d(src, component)
         write_imageset(name, "icon.svg", svg_contents("icon.svg", template), svg(vb, fill, d))
 
-    # OpenCode: two-rectangle mark (hardcoded, template).
+    # OpenCode: a clean box outline with a filled lower block (template). The
+    # original two-tone SVG flattens to a solid blob as a template, so we author a
+    # single, unambiguous monochrome glyph instead.
     opencode = (
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 40">'
-        '<path fill="#000" d="M24 32H8V16H24V32Z"/>'
-        '<path fill="#000" d="M24 8H8V32H24V8ZM32 40H0V0H32V40Z"/></svg>'
+        '<path fill-rule="evenodd" fill="#000" d="M0 0H32V40H0Z M8 8H24V32H8Z"/>'
+        '<path fill="#000" d="M8 16H24V32H8Z"/></svg>'
     ).encode()
     write_imageset("agent.opencode", "icon.svg", svg_contents("icon.svg", True), opencode)
+
+    # Antigravity (replaces the deprecated Gemini CLI): real brand PNG decoded from
+    # the embedded data URL in Icons.tsx (colored, original).
+    m = re.search(r'ANTIGRAVITY_ICON_DATA_URL\s*=\s*"data:image/png;base64,([^"]+)"', src)
+    if not m:
+        raise SystemExit("Could not find ANTIGRAVITY_ICON_DATA_URL in Icons.tsx")
+    import base64
+    write_imageset("agent.antigravity", "icon.png", png_contents("icon.png"),
+                   base64.b64decode(m.group(1)))
 
     # Custom user agents: a neutral monochrome "app" glyph (template).
     custom = (

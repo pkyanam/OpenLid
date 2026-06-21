@@ -46,7 +46,8 @@ prevents a crashed hook or agent from keeping the machine awake indefinitely.
 | Claude Code | `examples/hooks/claude-code/openlid-hook.sh` |
 | Codex CLI | `examples/hooks/codex/openlid-hook.sh` |
 | OpenCode | `examples/hooks/opencode/openlid-hook.sh` |
-| Gemini | `examples/hooks/gemini/openlid-hook.sh` |
+| Antigravity | `examples/hooks/antigravity/openlid-hook.sh` |
+| Devin | `examples/hooks/devin/openlid-hook.sh` |
 
 Each script accepts:
 

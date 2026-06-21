@@ -14,7 +14,10 @@ enum ConfigStore {
     static func load() -> AppConfig {
         guard let data = try? Data(contentsOf: configURL) else { return AppConfig() }
         do {
-            return try JSONDecoder().decode(AppConfig.self, from: data)
+            let decoded = try JSONDecoder().decode(AppConfig.self, from: data)
+            let normalized = decoded.normalized()
+            if normalized != decoded { save(normalized) }   // clean up stale/renamed agents
+            return normalized
         } catch {
             NSLog("OpenLid: failed to decode config, using defaults: \(error)")
             return AppConfig()

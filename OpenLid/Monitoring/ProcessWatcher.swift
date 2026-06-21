@@ -1,34 +1,56 @@
 import Foundation
 import AppKit
 
-/// Coarse "is this agent's process alive?" detection. Gathers the set of names of
-/// running apps / CLI processes, matched **exactly** (case-insensitive) against an
-/// agent's configured names. Exact matching avoids false positives like `cursor`
-/// matching `CursorUIViewService` or `code` matching `Xcode`.
+/// A running process reduced to the program being executed plus its full command
+/// line (for exclude matching).
+struct RunningProcess: Equatable {
+    /// Lowercased base name of the executable actually being run. For interpreter
+    /// launches (e.g. `node /path/codex app-server`) this is the script's name
+    /// (`codex`), not the interpreter.
+    let program: String
+    /// Lowercased full command line, used to test exclude patterns.
+    let commandLine: String
+}
+
+/// Coarse "is this agent's process alive?" detection. Matches an agent's exact
+/// program names against running apps/processes, while ignoring processes whose
+/// command line hits an exclude pattern (e.g. always-on `codex app-server` daemons).
 enum ProcessWatcher {
-    /// Lowercased exact names of every running GUI app (name + bundle id) and the
-    /// base command name of every CLI process.
-    static func runningNames() -> Set<String> {
-        var names = Set<String>()
+    private static let interpreters: Set<String> = [
+        "node", "node_repl", "bun", "deno", "python", "python3", "ruby", "npx", "tsx",
+    ]
+
+    static func snapshot() -> [RunningProcess] {
+        var processes: [RunningProcess] = []
+
+        // GUI apps: program == app name / bundle id; no meaningful command line.
         for app in NSWorkspace.shared.runningApplications {
-            if let name = app.localizedName { names.insert(name.lowercased()) }
-            if let bundle = app.bundleIdentifier { names.insert(bundle.lowercased()) }
+            if let name = app.localizedName?.lowercased() {
+                processes.append(RunningProcess(program: name, commandLine: name))
+            }
+            if let bundle = app.bundleIdentifier?.lowercased() {
+                processes.append(RunningProcess(program: bundle, commandLine: bundle))
+            }
         }
-        for name in cliProcessNames() { names.insert(name) }
-        return names
+        processes.append(contentsOf: cliProcesses())
+        return processes
     }
 
-    /// Number of the given names that are currently running (exact, case-insensitive).
-    static func matchCount(names: [String], in running: Set<String>) -> Int {
-        names.reduce(into: 0) { count, name in
-            if running.contains(name.lowercased()) { count += 1 }
-        }
+    /// Count of running processes whose program matches one of `names` and whose
+    /// command line contains none of `excludes`.
+    static func matchCount(names: [String], excludes: [String], in processes: [RunningProcess]) -> Int {
+        let needles = Set(names.map { $0.lowercased() })
+        let excludeNeedles = excludes.map { $0.lowercased() }
+        return processes.filter { proc in
+            guard needles.contains(proc.program) else { return false }
+            return !excludeNeedles.contains { proc.commandLine.contains($0) }
+        }.count
     }
 
-    private static func cliProcessNames() -> Set<String> {
+    private static func cliProcesses() -> [RunningProcess] {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/bin/ps")
-        process.arguments = ["-axo", "comm="]
+        process.arguments = ["-axo", "command="]
         let pipe = Pipe()
         process.standardOutput = pipe
         process.standardError = Pipe()
@@ -37,15 +59,28 @@ enum ProcessWatcher {
             let data = pipe.fileHandleForReading.readDataToEndOfFile()
             process.waitUntilExit()
             guard let output = String(data: data, encoding: .utf8) else { return [] }
-            var names = Set<String>()
-            for line in output.split(separator: "\n") {
-                let trimmed = line.trimmingCharacters(in: .whitespaces)
-                guard !trimmed.isEmpty else { continue }
-                names.insert((trimmed as NSString).lastPathComponent.lowercased())
+            return output.split(separator: "\n").compactMap { line in
+                let command = line.trimmingCharacters(in: .whitespaces)
+                guard !command.isEmpty else { return nil }
+                return RunningProcess(program: programName(of: command), commandLine: command.lowercased())
             }
-            return names
         } catch {
             return []
         }
+    }
+
+    /// Determine the effective program name for a command line, unwrapping common
+    /// interpreters so `node /usr/x/bin/codex app-server` resolves to `codex`.
+    private static func programName(of command: String) -> String {
+        let tokens = command.split(separator: " ").map(String.init)
+        guard let first = tokens.first else { return "" }
+        var program = (first as NSString).lastPathComponent.lowercased()
+        if interpreters.contains(program) {
+            // Use the first non-flag argument (the script being run).
+            if let script = tokens.dropFirst().first(where: { !$0.hasPrefix("-") }) {
+                program = (script as NSString).lastPathComponent.lowercased()
+            }
+        }
+        return program
     }
 }

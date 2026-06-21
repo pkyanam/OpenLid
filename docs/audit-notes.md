@@ -38,7 +38,7 @@ risks worth tracking.
 | `holdDisplayAwake` is implemented but unused | Dead or future-facing API can confuse maintainers. | Current behavior only forces display off; it does not hold display awake. |
 | Delayed display-off closure is not cancelled | A scheduled display-off after finish can still run if agents restart before the delay expires. | This only applies when auto-sleep is disabled and `displayOffAfterFinishSeconds > 0`. |
 | Process detection cannot tell idle from working | A long-lived agent process is reported as "running" the whole time it is open. | Hook detection is preferred for supported agents; matching is exact to avoid helper/false-positive noise. |
-| Hook docs for Codex/OpenCode/Gemini are generic | Users may need version-specific lifecycle config. | The examples include scripts but not exact event mappings for every tool version. |
+| Hook docs for Codex/OpenCode/Antigravity/Devin are generic | Users may need version-specific lifecycle config. | The examples include scripts but not exact event mappings for every tool version. |
 
 ## Suggested Test Coverage
 

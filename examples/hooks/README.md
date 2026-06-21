@@ -28,7 +28,7 @@ the agent starts and `idle` when it stops.
 | Claude Code | [`claude-code/`](claude-code/) | Full reference: script + `settings.json` hooks |
 | OpenAI Codex CLI | [`codex/`](codex/) | Wire into Codex's notify/event mechanism |
 | OpenCode | [`opencode/`](opencode/) | Wire into OpenCode's hook/event mechanism |
-| Gemini | [`gemini/`](gemini/) | Wire into the Gemini CLI's event mechanism |
+| Antigravity | [`antigravity/`](antigravity/) | Wire into Antigravity's event mechanism (supersedes the Gemini CLI) |
 | Devin | [`devin/`](devin/) | Wire into the Devin CLI's event mechanism |
 
 Most of these agents also have **process detection** as a built-in fallback, so they

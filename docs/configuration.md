@@ -43,7 +43,7 @@ its hook is installed.
 | Claude Code | `claude-code` | Hook + process | hook `claude-code`, process `claude` |
 | OpenAI Codex CLI | `codex` | Hook + process | hook `codex`, process `codex` |
 | OpenCode | `opencode` | Hook + process | hook `opencode`, process `opencode` |
-| Gemini | `gemini` | Hook + process | hook `gemini`, process `gemini` |
+| Antigravity | `antigravity` | Hook + process | hook `antigravity`, process `Antigravity` |
 | Devin | `devin` | Hook + process | hook `devin`, process `devin` |
 | Cursor | `cursor` | Process | process `Cursor` |
 

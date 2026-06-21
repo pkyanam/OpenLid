@@ -9,16 +9,32 @@ import Foundation
 struct AgentDetection: Codable, Equatable, Hashable {
     /// Hook id watched in `~/.openlid/agents/` (file-based signaling). High accuracy.
     var hookID: String?
-    /// Exact process / application names to match (case-insensitive). Coarse fallback.
+    /// Exact program names to match (case-insensitive) against the executable being
+    /// run (interpreter-aware) and GUI app names. Coarse fallback.
     var processNames: [String]
+    /// If a matching process's full command line contains any of these substrings,
+    /// it's ignored. Used to skip always-on daemons (e.g. `codex app-server` spawned
+    /// by other tools) so they don't look like an active session.
+    var excludeProcessPatterns: [String]
 
-    init(hookID: String? = nil, processNames: [String] = []) {
+    init(hookID: String? = nil, processNames: [String] = [], excludeProcessPatterns: [String] = []) {
         self.hookID = hookID
         self.processNames = processNames
+        self.excludeProcessPatterns = excludeProcessPatterns
     }
 
     var usesHook: Bool { hookID != nil }
     var usesProcess: Bool { !processNames.isEmpty }
+
+    // Tolerant decoding so older configs (without the newer keys) still load.
+    private enum CodingKeys: String, CodingKey { case hookID, processNames, excludeProcessPatterns }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        hookID = try c.decodeIfPresent(String.self, forKey: .hookID)
+        processNames = try c.decodeIfPresent([String].self, forKey: .processNames) ?? []
+        excludeProcessPatterns = try c.decodeIfPresent([String].self, forKey: .excludeProcessPatterns) ?? []
+    }
 }
 
 /// A configured agent OpenLid watches. Persisted to config.json.

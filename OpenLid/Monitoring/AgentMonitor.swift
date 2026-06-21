@@ -10,7 +10,7 @@ final class AgentMonitor {
         let hookCounts = hookWatcher.workingSessions(staleAfter: staleAfter)
 
         let needsProcessScan = enabled.contains { $0.detection.usesProcess }
-        let runningNames = needsProcessScan ? ProcessWatcher.runningNames() : []
+        let processes = needsProcessScan ? ProcessWatcher.snapshot() : []
 
         return enabled.map { agent in
             let hookCount = agent.detection.hookID.map { hookCounts[$0] ?? 0 } ?? 0
@@ -19,7 +19,9 @@ final class AgentMonitor {
                                    isWorking: true, sessionCount: hookCount, detectedViaHook: true)
             }
             let processCount = agent.detection.usesProcess
-                ? ProcessWatcher.matchCount(names: agent.detection.processNames, in: runningNames)
+                ? ProcessWatcher.matchCount(names: agent.detection.processNames,
+                                            excludes: agent.detection.excludeProcessPatterns,
+                                            in: processes)
                 : 0
             return AgentStatus(id: agent.id, name: agent.name, iconName: agent.iconName,
                                isWorking: processCount > 0, sessionCount: processCount,

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# OpenLid hook for Gemini.
+# OpenLid hook for Antigravity.
 #
 # Usage:  openlid-hook.sh <working|idle> [session-id]
 #
@@ -11,7 +11,7 @@ set -euo pipefail
 
 STATE="${1:-working}"
 SESSION="${2:-}"
-AGENT="gemini"
+AGENT="antigravity"
 DIR="$HOME/.openlid/agents"
 mkdir -p "$DIR"
 

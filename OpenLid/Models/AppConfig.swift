@@ -34,14 +34,15 @@ struct AppConfig: Codable, Equatable {
               detection: AgentDetection(hookID: "claude-code", processNames: ["claude"]),
               iconName: "agent.claude"),
         Agent(id: "codex", name: "OpenAI Codex CLI",
-              detection: AgentDetection(hookID: "codex", processNames: ["codex"]),
+              detection: AgentDetection(hookID: "codex", processNames: ["codex"],
+                                        excludeProcessPatterns: ["app-server"]),
               iconName: "agent.openai"),
         Agent(id: "opencode", name: "OpenCode",
               detection: AgentDetection(hookID: "opencode", processNames: ["opencode"]),
               iconName: "agent.opencode"),
-        Agent(id: "gemini", name: "Gemini",
-              detection: AgentDetection(hookID: "gemini", processNames: ["gemini"]),
-              iconName: "agent.gemini"),
+        Agent(id: "antigravity", name: "Antigravity",
+              detection: AgentDetection(hookID: "antigravity", processNames: ["Antigravity"]),
+              iconName: "agent.antigravity"),
         Agent(id: "devin", name: "Devin",
               detection: AgentDetection(hookID: "devin", processNames: ["devin"]),
               iconName: "agent.devin"),
@@ -49,4 +50,27 @@ struct AppConfig: Codable, Equatable {
               detection: AgentDetection(processNames: ["Cursor"]),
               iconName: "agent.cursor"),
     ]
+
+    /// Reconcile persisted agents with the current built-in defaults: built-in
+    /// detection rules, names and icons always come from code (so improvements ship
+    /// without wiping the user's config), while the user's `enabled` toggles and any
+    /// custom agents are preserved.
+    func normalized() -> AppConfig {
+        var result = self
+        let defaultIDs = Set(AppConfig.defaultAgents.map(\.id))
+        var merged: [Agent] = AppConfig.defaultAgents.map { def in
+            guard let existing = agents.first(where: { $0.id == def.id }) else { return def }
+            var refreshed = def
+            refreshed.enabled = existing.enabled
+            return refreshed
+        }
+        // Preserve only genuinely user-added agents (the "custom-" prefix we assign).
+        // Anything else that isn't a current default is a removed/renamed built-in
+        // (e.g. the deprecated "gemini") and is dropped.
+        merged.append(contentsOf: agents.filter {
+            !defaultIDs.contains($0.id) && $0.id.hasPrefix("custom-")
+        })
+        result.agents = merged
+        return result
+    }
 }
