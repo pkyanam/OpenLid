@@ -43,8 +43,9 @@ its hook is installed.
 | Claude Code | `claude-code` | Hook + process | hook `claude-code`, process `claude` |
 | OpenAI Codex CLI | `codex` | Hook + process | hook `codex`, process `codex` |
 | OpenCode | `opencode` | Hook + process | hook `opencode`, process `opencode` |
-| Antigravity | `antigravity` | Hook + process | hook `antigravity`, process `Antigravity` |
+| Antigravity | `antigravity` | Hook + process | hook `antigravity`, process `Antigravity`, `Antigravity IDE` |
 | Devin | `devin` | Hook + process | hook `devin`, process `devin` |
+| Hermes | `hermes` | Hook + process | hook `hermes`, process `hermes` |
 | Cursor | `cursor` | Process | process `Cursor` |
 
 ## Battery Guardrail Rules

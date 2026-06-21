@@ -16,6 +16,9 @@ ICONS_TSX = os.path.expanduser(
 DEVIN_PNG = os.path.expanduser(
     "~/projects/trifecta/trifecta-desktop/apps/web/public/DevinLogoSquare.png"
 )
+HERMES_JPG = os.path.expanduser(
+    "~/projects/trifecta/trifecta-desktop/apps/web/public/hermes-logo.jpg"
+)
 ASSETS = "OpenLid/Assets.xcassets"
 
 
@@ -106,6 +109,9 @@ def main():
 
     # Devin: real brand PNG (colored, original).
     write_imageset("agent.devin", "icon.png", png_contents("icon.png"), open(DEVIN_PNG, "rb").read())
+
+    # Hermes (Nous Research): real brand JPG (colored, original).
+    write_imageset("agent.hermes", "icon.jpg", png_contents("icon.jpg"), open(HERMES_JPG, "rb").read())
 
     print("Generated agent icons into", ASSETS)
 

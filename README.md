@@ -35,7 +35,7 @@ Agents are detected two ways, and most use **both**:
 
 | Method | Accuracy | Used for |
 | --- | --- | --- |
-| **Lifecycle hooks** (file-based signaling) | High — real Working/Idle per session | Claude Code, Codex CLI, OpenCode, Antigravity, Devin |
+| **Lifecycle hooks** (file-based signaling) | High — real Working/Idle per session | Claude Code, Codex CLI, OpenCode, Antigravity, Devin, Hermes |
 | **Process detection** | Coarse — "process is alive" = potentially working | Cursor, plus a fallback for all CLI agents |
 
 When an agent has both, the hook signal wins and process detection is only a

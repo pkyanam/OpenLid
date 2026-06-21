@@ -48,6 +48,7 @@ prevents a crashed hook or agent from keeping the machine awake indefinitely.
 | OpenCode | `examples/hooks/opencode/openlid-hook.sh` |
 | Antigravity | `examples/hooks/antigravity/openlid-hook.sh` |
 | Devin | `examples/hooks/devin/openlid-hook.sh` |
+| Hermes | `examples/hooks/hermes/openlid-hook.sh` |
 
 Each script accepts:
 

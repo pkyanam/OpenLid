@@ -30,12 +30,13 @@ the agent starts and `idle` when it stops.
 | OpenCode | [`opencode/`](opencode/) | Wire into OpenCode's hook/event mechanism |
 | Antigravity | [`antigravity/`](antigravity/) | Wire into Antigravity's event mechanism (supersedes the Gemini CLI) |
 | Devin | [`devin/`](devin/) | Wire into the Devin CLI's event mechanism |
+| Hermes | [`hermes/`](hermes/) | Full reference: script + `~/.hermes/config.yaml` shell hooks |
 
 Most of these agents also have **process detection** as a built-in fallback, so they
 appear as "running" even before you install their hooks. Installing a hook upgrades
 that to accurate per-session "working / idle".
 
-> Exact hook/event names differ between tools and versions. The Claude Code example is
-> complete; the others ship the same script plus guidance, since their hook surfaces
-> vary. Contributions that pin down the exact config for each tool are very welcome —
+> Exact hook/event names differ between tools and versions. The Claude Code and Hermes
+> examples are complete; the others ship the same script plus guidance, since their hook
+> surfaces vary. Contributions that pin down the exact config for each tool are very welcome —
 > see [CONTRIBUTING.md](../../CONTRIBUTING.md).
